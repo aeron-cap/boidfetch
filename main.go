@@ -117,6 +117,9 @@ func main() {
 	}
 }
 
+func drawInfo(screen tcell.Screen, info []InfoLine) {
+}
+
 func DrawText(screen tcell.Screen, x, y int, style tcell.Style, text string) {
 	for i, char := range text {
 		screen.SetContent(x+i, y, char, nil, style)
