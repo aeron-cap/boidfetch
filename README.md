@@ -4,6 +4,39 @@
 - This uses the tcell library for terminal rendering.
 - The mini project was developed for learning purposes and to explore the Go programming language.
 
+### Installation
+Requires [Go](https://go.dev/dl/) 1.25 or later.
+
+```bash
+go install github.com/aeron-cap/boidfetch@latest
+```
+
+This builds the binary and places it in `$GOBIN` (or `$GOPATH/bin` if `$GOBIN` isn't set). Make sure that directory is on your `PATH`:
+
+```bash
+export PATH="$PATH:$(go env GOPATH)/bin"
+```
+
+Add that line to your `~/.bashrc` (or `~/.zshrc`) to make it persistent, then reload:
+
+```bash
+source ~/.bashrc
+```
+
+Verify it's installed:
+
+```bash
+boidfetch
+```
+
+### Building from source
+
+```bash
+git clone https://github.com/aeron-cap/boidfetch.git
+cd boidfetch
+go build -o boidfetch .
+```
+
 ### Main Features
 - Boid simulation with basic flocking behavior.
 - Real-time rendering in the terminal using tcell.
