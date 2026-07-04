@@ -1,4 +1,4 @@
-module github.com/aeron-cap/go-boids
+module github.com/aeron-cap/boidfetch
 
 go 1.25.11
 
