@@ -9,7 +9,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
-const boidAreaSize = 60
+const infoAreaWidth = 67
 
 func main() {
 	screen, err := tcell.NewScreen()
@@ -25,13 +25,12 @@ func main() {
 	info := GatherInfo()
 
 	width, height := screen.Size()
-	infoPaneWidth := width - boidAreaSize
-	boidPaneWidth := width - boidAreaSize 
+	boidPaneWidth := width - infoAreaWidth 
 
 	var flock []*Boid
-	for range 10 {
+	for range 100 {
 		b := &Boid{
-			Position: Vector2D{X: rand.Float64() * 80, Y: rand.Float64() * 24},
+			Position: Vector2D{X: rand.Float64() * float64(boidPaneWidth), Y: rand.Float64() * float64(height)},
 			Velocity: Vector2D{X: (rand.Float64() * 2) - 1, Y: (rand.Float64() * 2) - 1},
 			Type:     NormalBoid,
 		}
@@ -63,7 +62,7 @@ func main() {
 					flock = nil
 					for range 10 {
 						b := &Boid{
-							Position: Vector2D{X: rand.Float64() * 80, Y: rand.Float64() * 24},
+							Position: Vector2D{X: rand.Float64() * float64(boidPaneWidth), Y: rand.Float64() * float64(height)},
 							Velocity: Vector2D{X: (rand.Float64() * 2) - 1, Y: (rand.Float64() * 2) - 1},
 							Type:     NormalBoid,
 						}
@@ -79,6 +78,10 @@ func main() {
 				x, y := ev.Position()
 				button := ev.Buttons()
 				if x > boidPaneWidth{
+					continue
+				}
+
+				if len(flock) >= 1000 {
 					continue
 				}
 				
@@ -105,6 +108,8 @@ func main() {
 
 		case <-ticker.C:
 			screen.Clear()
+			width, height = screen.Size()
+			boidPaneWidth = width - infoAreaWidth
 			for _, b := range flock {
 				if b.IsDead {
 					continue
@@ -122,7 +127,7 @@ func main() {
 			}
 			flock = survivors
 
-			drawInfo(screen, info, infoPaneWidth, height)
+			drawInfo(screen, info, width - infoAreaWidth, height)
 
 			if hasUi {
 				uiStyle := tcell.StyleDefault.Foreground(tcell.ColorYellow)
