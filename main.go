@@ -9,6 +9,8 @@ import (
 	"github.com/gdamore/tcell/v2"
 )
 
+const boidAreaSize = 60
+
 func main() {
 	screen, err := tcell.NewScreen()
 	if err != nil {
@@ -20,6 +22,11 @@ func main() {
 	defer screen.Fini()
 
 	screen.EnableMouse()
+	info := GatherInfo()
+
+	width, height := screen.Size()
+	infoPaneWidth := width - boidAreaSize
+	boidPaneWidth := width - boidAreaSize 
 
 	var flock []*Boid
 	for range 10 {
@@ -41,6 +48,8 @@ func main() {
 	ticker := time.NewTicker(time.Second / 30)
 	defer ticker.Stop()
 
+	hasUi := true
+
 	for {
 		select {
 		case ev := <-eventChan:
@@ -61,14 +70,22 @@ func main() {
 						flock = append(flock, b)
 					}
 				}
+
+				if ev.Key() == tcell.KeyRune && ev.Rune() == 'h' {
+					hasUi = !hasUi
+				}
 				
 			case *tcell.EventMouse:
 				x, y := ev.Position()
 				button := ev.Buttons()
-
+				if x > boidPaneWidth{
+					continue
+				}
+				
+				relX := x
 				if button == tcell.Button1 {
 					newBoid := &Boid{
-						Position: Vector2D{X: float64(x), Y: float64(y)},
+						Position: Vector2D{X: float64(relX), Y: float64(y)},
 						Velocity: Vector2D{X: (rand.Float64() * 2) - 1, Y: (rand.Float64() * 2) - 1},
 					}
 
@@ -77,7 +94,7 @@ func main() {
 
 				if button == tcell.Button2 {
 					newBoid := &Boid{
-						Position: Vector2D{X: float64(x), Y: float64(y)},
+						Position: Vector2D{X: float64(relX), Y: float64(y)},
 						Velocity: Vector2D{X: (rand.Float64() * 2) - 1, Y: (rand.Float64() * 2) - 1},
 						Type:     PredatorBoid,
 					}
@@ -88,13 +105,12 @@ func main() {
 
 		case <-ticker.C:
 			screen.Clear()
-			width, height := screen.Size()
 			for _, b := range flock {
 				if b.IsDead {
 					continue
 				}
 				
-				b.Update(width, height, flock)
+				b.Update(boidPaneWidth, height, flock)
 				b.Draw(screen)
 			}
 
@@ -105,19 +121,36 @@ func main() {
 				}
 			}
 			flock = survivors
-			
-			uiStyle := tcell.StyleDefault.Foreground(tcell.ColorYellow).Background(tcell.ColorBlack)
-			count := fmt.Sprintf("Normal Boids: %v | Predators: %v", getNormalCount(flock), len(flock)-getNormalCount(flock))
-			DrawText(screen, 1, 0, uiStyle, count)
-			controls := "Left Click: Spawn Boid | Right Click: Spawn Predator | Esc: Quit | r: Reset"
-			DrawText(screen, 1, height-1, uiStyle, controls)
+
+			drawInfo(screen, info, infoPaneWidth, height)
+
+			if hasUi {
+				uiStyle := tcell.StyleDefault.Foreground(tcell.ColorYellow)
+				count := fmt.Sprintf("Normal Boids: %v | Predators: %v", getNormalCount(flock), len(flock)-getNormalCount(flock))
+				DrawText(screen, 1, 0, uiStyle, count)
+				controls := "Left Click: Spawn Boid | Right Click: Spawn Predator | Esc: Quit | r: Reset | h: hide ui"
+				DrawText(screen, 1, height - 1, uiStyle, controls)
+			}
 
 			screen.Show()
 		}
 	}
 }
 
-func drawInfo(screen tcell.Screen, info []InfoLine) {
+func drawInfo(screen tcell.Screen, info []InfoLine, width, height int) {
+	labelStyle := tcell.StyleDefault.Foreground(tcell.ColorYellow).Bold(true)
+	valueStyle := tcell.StyleDefault.Foreground(tcell.ColorWhite)
+
+	row := height/2 - len(info)/2
+	if row < 0 {
+		row = 0
+	}
+
+	for _, line := range info {
+		DrawText(screen, width + 4, row, labelStyle, line.Label)
+		DrawText(screen, width + 16, row, valueStyle, line.Value)
+		row++
+	}
 }
 
 func DrawText(screen tcell.Screen, x, y int, style tcell.Style, text string) {
