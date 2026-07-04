@@ -1,5 +1,6 @@
-## Boids implementation written in Go.
+## Boids implementation written in Go + Sysinfo fetching
 
+- Fetches system information.
 - This uses the tcell library for terminal rendering.
 - The mini project was developed for learning purposes and to explore the Go programming language.
 
@@ -10,10 +11,13 @@
 - Predator and prey dynamics.
 - Can add new boids/predators using mouse clicks.
 
-### Future (if I have time)
-- Add mouse support for interacting with the flock.
-- Implement a different rendering option in the terminal for smoother movement and better visuals.
+### Future
 - Performance improvements for larger flocks.
+- More system info to display.
+- Implement a different rendering option in the terminal for smoother movement and better visuals.
+
+### Contributing
+- Feel free to contribute by making a PR~
 
 ```
            \\
@@ -23,3 +27,6 @@ ___(())____V_/_____ birb
    ||      ||
            ||
 ```
+
+### Demo
+<img width="1358" height="792" alt="boidfetch" src="https://github.com/user-attachments/assets/41f5eaa2-944c-45c9-867d-e72261358d5d" />
